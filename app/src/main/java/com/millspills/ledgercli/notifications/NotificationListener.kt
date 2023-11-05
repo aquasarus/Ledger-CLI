@@ -1,4 +1,4 @@
-package com.millspills.ledgercli
+package com.millspills.ledgercli.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -15,7 +15,12 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
+import com.millspills.ledgercli.MainActivity
+import com.millspills.ledgercli.MainViewModel
+import com.millspills.ledgercli.R
+import com.millspills.ledgercli.aliasesDataStore
 import com.millspills.ledgercli.config.AliasGroup
+import com.millspills.ledgercli.dataStore
 import com.millspills.ledgercli.ledgerdata.SimpleTransactionInfo
 import com.millspills.ledgercli.proto.toMap
 import kotlinx.coroutines.CoroutineScope
@@ -107,13 +112,18 @@ class NotificationListener : NotificationListenerService() {
         val packageName =
             notification.extras?.getParcelable<ApplicationInfo>("android.appInfo")?.packageName
                 ?: ""
-        val body =
+        var body =
             notification.extras?.getCharSequence(Notification.EXTRA_TEXT)?.toString()?.trim() ?: ""
-        val bodyBigText =
+        var bodyBigText =
             notification.extras?.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString()?.trim()
                 ?: ""
         val title =
             notification.extras?.getCharSequence(Notification.EXTRA_TITLE)?.toString()?.trim() ?: ""
+
+        // add missing 0 if needed
+        body = ParseUtils.addZeroToDollarAmount(body)
+        bodyBigText = ParseUtils.addZeroToDollarAmount(bodyBigText)
+
         val notificationRawSummary =
             "Notification from $packageName with title \"$title\", body \"$body\", big text body \"$bodyBigText\""
 
