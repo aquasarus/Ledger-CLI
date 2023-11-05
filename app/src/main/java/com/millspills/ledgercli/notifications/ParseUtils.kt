@@ -10,5 +10,11 @@ class ParseUtils {
                 "\$0.$digit"
             }
         }
+
+        fun isCibcCreditCardPayment(input: String): Boolean {
+            val regex = """Payment\s+\$""".toRegex() // match any string containing "Payment(whitespaces)$"
+
+            return regex.containsMatchIn(input);
+        }
     }
 }

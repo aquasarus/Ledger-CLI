@@ -301,7 +301,11 @@ class NotificationListener : NotificationListenerService() {
         return false
     }
 
-    private fun parseCibcNotification(body: String): SimpleTransactionInfo {
+    private fun parseCibcNotification(body: String): SimpleTransactionInfo? {
+        if (ParseUtils.isCibcCreditCardPayment(body)) {
+            return null // skip credit card payments
+        }
+
         return try {
             val regex = """^(.*?, \d{4})\s([^$]*)\s(\$[\d.,]+)""".toRegex()
             val matchResult = regex.find(body)

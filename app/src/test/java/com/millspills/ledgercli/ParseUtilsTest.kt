@@ -5,11 +5,6 @@ import org.junit.Test
 
 import org.junit.Assert.*
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ParseUtilsTest {
     @Test
     fun addMissingZeroAfterDollarSign() {
@@ -23,5 +18,23 @@ class ParseUtilsTest {
         val testInput = ""
         val desiredOutput = ""
         assertEquals(desiredOutput, ParseUtils.addZeroToDollarAmount(testInput))
+    }
+
+    @Test
+    fun checkCibcCreditCardPaymentTrue() {
+        val testInput = "CIBC Dividend Visa Infinite Card, 1234 Payment $1,977.91"
+        assertEquals(true, ParseUtils.isCibcCreditCardPayment(testInput))
+    }
+
+    @Test
+    fun checkCibcCreditCardPaymentTrueExtraWhitespace() {
+        val testInput = "CIBC Dividend Visa Infinite Card, 1234 Payment     $1,977.91"
+        assertEquals(true, ParseUtils.isCibcCreditCardPayment(testInput))
+    }
+
+    @Test
+    fun checkCibcCreditCardPaymentFalse() {
+        val testInput = "CIBC Dividend Visa Infinite Card, 1234 ROB'S NF #7076 $81.62"
+        assertEquals(false, ParseUtils.isCibcCreditCardPayment(testInput))
     }
 }
