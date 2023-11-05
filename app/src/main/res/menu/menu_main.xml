@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.millspills.ledgercli.MainActivity">
+    <item
+        android:id="@+id/action_set_ledger_path"
+        android:orderInCategory="1"
+        android:title="@string/action_set_ledger_path"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_set_aliases_path"
+        android:orderInCategory="2"
+        android:title="@string/action_set_aliases_path"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_set_debug_logs_path"
+        android:orderInCategory="2"
+        android:title="@string/action_set_debug_logs_path"
+        app:showAsAction="never" />
+
+</menu>

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto"; // Import the timestamp.proto file
+
+message LedgerFileProto {
+    string aliases = 1;
+    string initial_comments = 2;
+    repeated Transaction transactions = 3;
+}
+
+message Transaction {
+    TransactionTitle title = 1;
+    repeated TransactionAccount accounts = 2;
+}
+
+message TransactionTitle {
+    google.protobuf.Timestamp date = 1;
+    bool unread = 2;
+    string payee = 3;
+    string inline_comment = 4;
+    string next_line_comment = 5;
+}
+
+message TransactionAccount {
+    string account = 1;
+    string amount = 2;
+    string inline_comment = 3;
+    string next_line_comment = 4;
+}
