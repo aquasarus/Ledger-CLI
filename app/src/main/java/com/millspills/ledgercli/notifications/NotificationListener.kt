@@ -310,49 +310,11 @@ class NotificationListener : NotificationListenerService() {
             return null // skip credit card payments
         }
 
-        return try {
-            val regex = """^(.*?, \d{4})\s([^$]*)\s(\$[\d.,]+)""".toRegex()
-            val matchResult = regex.find(body)
-
-            matchResult!!.let {
-                val (accountString, payeeString, amountString) = it.destructured
-                SimpleTransactionInfo(
-                    amountString.trim().replace(",", ""),
-                    payeeString.trim(),
-                    LocalDate.now(),
-                    "Liabilities:${accountString.trim().replace(",", "")}"
-                )
-            }
-        } catch (ex: Exception) {
-            // use fallback method
-            val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-            val dollarAmountMatch = dollarAmountRegex.find(body)
-            val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-            SimpleTransactionInfo(dollarAmount, "Unknown", LocalDate.now(), "Liabilities:Unknown")
-        }
+        return ParseUtils.parseCibcCredit(body)
     }
 
     private fun parseTangerineCreditNotification(body: String): SimpleTransactionInfo {
-        return try {
-            val regex = """(\$[\d.,]+).*?at (.*?) on""".toRegex()
-            val matchResult = regex.find(body)
-
-            return matchResult!!.let {
-                val (dollarAmount, payee) = it.destructured
-                SimpleTransactionInfo(dollarAmount, payee.trim(), LocalDate.now(), "Tangerine")
-            }
-        } catch (ex: Exception) {
-            // use fallback method
-            val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-            val dollarAmountMatch = dollarAmountRegex.find(body)
-            val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-            SimpleTransactionInfo(
-                dollarAmount,
-                "Unknown",
-                LocalDate.now(),
-                "Tangerine"
-            )
-        }
+        return ParseUtils.parseTangerineCredit(body)
     }
 
     private fun parseTangerineDebitNotification(body: String): SimpleTransactionInfo {
