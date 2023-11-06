@@ -1,5 +1,6 @@
 package com.millspills.ledgercli
 
+import com.millspills.ledgercli.config.AliasGroup
 import com.millspills.ledgercli.notifications.ParseUtils
 import org.junit.Test
 
@@ -102,5 +103,56 @@ class ParseUtilsTest {
         assertEquals("Unknown", transaction.payee)
         assertEquals("$12.34", transaction.dollarAmount)
         assertEquals("Tangerine", transaction.account)
+    }
+
+    @Test
+    fun parseAliasesFileRaw() {
+        val testInput = "Amazon\n" +
+                "    amzn\n" +
+                "\n" +
+                "No Frills\n" +
+                "    robs nf\n" +
+                "\n" +
+                "Real Fruit Bubble Tea\n" +
+                "    RFBT"
+        val aliasesMap = mutableMapOf<String, AliasGroup>()
+        ParseUtils.parseAliasesFileRaw(testInput, "TEST", aliasesMap, isTest = true)
+
+        assertTrue(aliasesMap.contains("Amazon"))
+        assertEquals(mutableSetOf("amzn"), aliasesMap["Amazon"]!!.aliases)
+
+        assertTrue(aliasesMap.contains("No Frills"))
+        assertEquals(mutableSetOf("robsnf"), aliasesMap["No Frills"]!!.aliases)
+
+        assertTrue(aliasesMap.contains("Real Fruit Bubble Tea"))
+        assertEquals(mutableSetOf("rfbt"), aliasesMap["Real Fruit Bubble Tea"]!!.aliases)
+    }
+
+    @Test
+    fun parseAliasesFileRaw_ForceCategory() {
+        val testInput = "Amazon | Expenses:Shopping\n" +
+                "    amzn\n" +
+                "\n" +
+                "No Frills\n" +
+                "    robs nf\n" +
+                "\n" +
+                "Real Fruit Bubble Tea | Expenses:Tea\n" +
+                "    RFBT"
+        val aliasesMap = mutableMapOf<String, AliasGroup>()
+        ParseUtils.parseAliasesFileRaw(testInput, "TEST", aliasesMap, isTest = true)
+
+        assertTrue(aliasesMap.contains("Amazon"))
+        assertEquals(mutableSetOf("amzn"), aliasesMap["Amazon"]!!.aliases)
+        assertEquals("Expenses:Shopping", aliasesMap["Amazon"]!!.getMostUsedCategory().first)
+
+        assertTrue(aliasesMap.contains("No Frills"))
+        assertEquals(mutableSetOf("robsnf"), aliasesMap["No Frills"]!!.aliases)
+
+        assertTrue(aliasesMap.contains("Real Fruit Bubble Tea"))
+        assertEquals(mutableSetOf("rfbt"), aliasesMap["Real Fruit Bubble Tea"]!!.aliases)
+        assertEquals(
+            "Expenses:Tea",
+            aliasesMap["Real Fruit Bubble Tea"]!!.getMostUsedCategory().first
+        )
     }
 }

@@ -116,6 +116,10 @@ fun Alias.AliasGroupProto.toAliasGroup(): AliasGroup {
         aliasGroup.countCategory(category, count)
     }
 
+    if (!this.forcedCategory.isNullOrBlank()) {
+        aliasGroup.forceCategory(this.forcedCategory)
+    }
+
     return aliasGroup
 }
 
@@ -124,6 +128,10 @@ fun AliasGroup.toAliasGroupProto(): Alias.AliasGroupProto {
 
     aliasGroupProtoBuilder.addAllAliases(aliases)
     aliasGroupProtoBuilder.putAllCategories(categories)
+
+    _forcedCategory?.let {
+        aliasGroupProtoBuilder.forcedCategory = _forcedCategory
+    }
 
     return aliasGroupProtoBuilder.build()
 }

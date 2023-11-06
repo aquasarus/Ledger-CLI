@@ -6,6 +6,7 @@ data class AliasGroup(
     private var _mostUsedCategory: String? = null
     internal val categories: MutableMap<String, Int> = mutableMapOf()
     private var _totalCount = 0
+    internal var _forcedCategory: String? = null
 
     fun addAlias(alias: String) {
         aliases.add(alias)
@@ -28,6 +29,10 @@ data class AliasGroup(
     }
 
     fun getMostUsedCategory(): Pair<String?, Boolean> {
+        _forcedCategory?.let {
+            return Pair(_forcedCategory, true)
+        }
+
         _mostUsedCategory ?: return Pair(null, true)
 
         val mostUsedCount = categories[_mostUsedCategory]!!
@@ -37,5 +42,9 @@ data class AliasGroup(
         } else {
             Pair(_mostUsedCategory, false)
         }
+    }
+
+    fun forceCategory(category: String) {
+        _forcedCategory = category
     }
 }

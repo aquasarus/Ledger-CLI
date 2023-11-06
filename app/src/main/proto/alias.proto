@@ -3,6 +3,7 @@ syntax = "proto3";
 message AliasGroupProto {
   repeated string aliases = 1;
   map<string, int32> categories = 2;
+  string forcedCategory = 3;
 }
 
 message AliasGroupsMap {

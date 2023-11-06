@@ -14,6 +14,7 @@ import com.millspills.ledgercli.ledgerdata.LedgerFile
 import com.millspills.ledgercli.ledgerdata.Transaction
 import com.millspills.ledgercli.ledgerdata.TransactionAccount
 import com.millspills.ledgercli.ledgerdata.TransactionTitle
+import com.millspills.ledgercli.notifications.ParseUtils
 import com.millspills.ledgercli.proto.toProto
 import com.millspills.ledgercli.proto.toLedgerFile
 import com.millspills.ledgercli.proto.toMap
@@ -85,35 +86,7 @@ class MainViewModel(applicationContext: Context) : ViewModel() {
             val uri = Uri.parse(filePath)
             val fileRaw = readFile(uri).trim()
 
-            val aliases = fileRaw.split(Regex("\\n\\s*\\n"))
-            for (alias in aliases) {
-                try {
-                    val lines = alias.lines()
-                    lateinit var actual: String
-                    for (i in lines.indices) {
-                        if (i == 0) {
-                            actual = lines[i]
-                        } else {
-                            if (lines[i].isBlank())
-                                continue
-
-                            // keep only letters, in lowercase
-                            val formattedAlias =
-                                lines[i].lowercase().replace(ALIAS_FORMAT, "")
-
-                            Log.d(
-                                TAG,
-                                "Creating custom alias for $actual: [$formattedAlias]"
-                            )
-                            _aliases[actual]?.addAlias(formattedAlias) ?: run {
-                                _aliases[actual] = AliasGroup(mutableSetOf(formattedAlias))
-                            }
-                        }
-                    }
-                } catch (ex: Exception) {
-                    Firebase.crashlytics.recordException(Exception("Failed to parse custom alias: $alias"))
-                }
-            }
+            ParseUtils.parseAliasesFileRaw(fileRaw, TAG, _aliases)
 
             Log.d(TAG, "All custom aliases loaded!")
             _aliasLoadedNotifier.postValue(Unit)
