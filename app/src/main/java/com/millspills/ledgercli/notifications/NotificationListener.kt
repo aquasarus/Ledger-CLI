@@ -134,6 +134,10 @@ class NotificationListener : NotificationListenerService() {
             when (title) {
                 "Withdrawal made" -> parseTangerineDebitNotification(bodyBigText)
                 "Direct deposit received" -> parseTangerineDirectDepositNotification(bodyBigText)
+                "Pre-authorized payment taken" -> parseTangerinePreAuthorizedPaymentNotification(
+                    bodyBigText
+                )
+
                 else -> parseTangerineCreditNotification(bodyBigText)
             }
         } else if (packageName.contains("facebook")) {
@@ -376,6 +380,15 @@ class NotificationListener : NotificationListenerService() {
             "Income:Salary",
             category = "Assets:Tangerine Checking"
         )
+    }
+
+    private fun parseTangerinePreAuthorizedPaymentNotification(body: String): SimpleTransactionInfo? {
+        val transactionInfo = ParseUtils.parseTangerinePreAuthorizedPayment(body)
+        return if (transactionInfo.payee == "TANGERINE CCRD") {
+            null // ignore Tangerine credit card payments
+        } else {
+            transactionInfo
+        }
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
