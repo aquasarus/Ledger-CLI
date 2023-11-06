@@ -318,30 +318,17 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun parseTangerineDebitNotification(body: String): SimpleTransactionInfo {
-        val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-        val dollarAmountMatch = dollarAmountRegex.find(body)
-        val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-
-        return SimpleTransactionInfo(
-            dollarAmount,
-            "Unspecified withdrawal",
-            LocalDate.now(),
-            "Assets:Tangerine Checking"
+        return ParseUtils.parseAmountOnly(
+            body,
+            "Assets:Tangerine Checking",
+            "Unspecified withdrawal"
         )
     }
 
     private fun parseTangerineDirectDepositNotification(body: String): SimpleTransactionInfo {
-        val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-        val dollarAmountMatch = dollarAmountRegex.find(body)
-        val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-
-        return SimpleTransactionInfo(
-            dollarAmount,
-            "Unknown",
-            LocalDate.now(),
-            "Income:Salary",
-            category = "Assets:Tangerine Checking"
-        )
+        val transactionInfo = ParseUtils.parseAmountOnly(body, "Income:Salary")
+        transactionInfo.category = "Assets:Tangerine Checking"
+        return transactionInfo
     }
 
     private fun parseTangerinePreAuthorizedPaymentNotification(body: String): SimpleTransactionInfo? {

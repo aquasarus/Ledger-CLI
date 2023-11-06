@@ -21,6 +21,22 @@ class ParseUtils {
             return regex.containsMatchIn(input);
         }
 
+        fun parseAmountOnly(
+            body: String,
+            defaultAccount: String = "Unknown",
+            defaultPayee: String = "Unknown"
+        ): SimpleTransactionInfo {
+            val dollarAmountRegex = """\$[\d.,]+""".toRegex()
+            val dollarAmountMatch = dollarAmountRegex.find(body)
+            val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
+            return SimpleTransactionInfo(
+                dollarAmount,
+                defaultPayee,
+                LocalDate.now(),
+                defaultAccount
+            )
+        }
+
         fun parseCibcCredit(body: String): SimpleTransactionInfo {
             return try {
                 val regex = """^(.*?, \d{4})\s([^$]*)\s(\$[\d.,]+)""".toRegex()
@@ -36,16 +52,7 @@ class ParseUtils {
                     )
                 }
             } catch (ex: Exception) {
-                // use fallback method
-                val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-                val dollarAmountMatch = dollarAmountRegex.find(body)
-                val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-                SimpleTransactionInfo(
-                    dollarAmount,
-                    "Unknown",
-                    LocalDate.now(),
-                    "Liabilities:Unknown"
-                )
+                parseAmountOnly(body, "Liabilities:Unknown")
             }
         }
 
@@ -59,16 +66,7 @@ class ParseUtils {
                     SimpleTransactionInfo(dollarAmount, payee.trim(), LocalDate.now(), "Tangerine")
                 }
             } catch (ex: Exception) {
-                // use fallback method
-                val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-                val dollarAmountMatch = dollarAmountRegex.find(body)
-                val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-                SimpleTransactionInfo(
-                    dollarAmount,
-                    "Unknown",
-                    LocalDate.now(),
-                    "Tangerine"
-                )
+                parseAmountOnly(body, "Tangerine")
             }
         }
 
@@ -87,16 +85,7 @@ class ParseUtils {
                     )
                 }
             } catch (ex: Exception) {
-                // use fallback method
-                val dollarAmountRegex = """\$[\d.,]+""".toRegex()
-                val dollarAmountMatch = dollarAmountRegex.find(body)
-                val dollarAmount = dollarAmountMatch?.value ?: "Unknown"
-                SimpleTransactionInfo(
-                    dollarAmount,
-                    "Unknown",
-                    LocalDate.now(),
-                    "Tangerine Checking"
-                )
+                parseAmountOnly(body, "Tangerine Checking")
             }
         }
     }
